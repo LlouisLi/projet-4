@@ -1,15 +1,15 @@
 import subprocess
 import requests
 import urllib.request
-import time
 from bs4 import BeautifulSoup
 import os
+import pandas as pd
 
 #subprocess.run("gmail.com")
 
-url = "https://accounts.google.com/AccountChooser/signinchooser"
+url = "https://mail.google.com"
 response = requests.get(url)
 soup = BeautifulSoup(response.text,"html.parser")
-print(soup)
-for i in soup:
-    print (i)
+
+Gibaud = soup.find(attrs={'class':"zA zE"})
+print(Gibaud)
