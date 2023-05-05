@@ -28,13 +28,17 @@ for info in messages:
             print("subj:", mess["subject"])
             print("from:", mess["from"])
 
+            
             message1 = email.message_from_string(mess.as_string())
             for payload in message1.get_payload():
-
-                print("body:", message1)
+                if payload.get_content_type() == 'text/plain':
+                    print(payload.get_payload())
+            
 
             for i in mess['from']:
                 mail = mess['from']
 
                 affiche_mail = mail.split() #decompose le text par mot dans une liste
             print(affiche_mail[2]) #affiche les mails
+
+            
