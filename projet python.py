@@ -1,28 +1,35 @@
-#import subprocess
-import requests
-import urllib.request #permettent de faire des requetes
-from bs4 import BeautifulSoup #rendre pages accessibles
-import pandas as pd #pour mettre l'objet dans un table
-from selenium import webdriver #permettra de tansformer le 
-#code dans "inspecter de la page en html"
-from time import sleep #repos 
+import imaplib
+import email
+import csv
 
-def connection():
-    url = "https://mail.google.com/mail/u/0/#sent"
-    css_selector = ".zA yO" #id de la ligne du tableau avec l'adresse mail
+mail = imaplib.IMAP4_SSL("imap.gmail.com")
+mail.login("roro.enzo.test@gmail.com","pnrbwptkjsvevasv") #se connecter
 
-    wd_path = "PROJET ER/chromedriver" #chromedriver: pouvoir interagir avec la page google
+mail.select("Inbox") #acceder aux mail qu'on reçoit
 
-    wdriver = webdriver.Chrome(executable_path = wd_path) 
+clé = "SUBJECT" #prendre comme clé FROM
+valeur = "Contact" # dans from prendre une adresse
+résultat, data = mail.search(None, clé, valeur) #va donc rechercher l'adresse
 
-    wdriver.get(url)
-    #subprocess.run("gmail.com")
-    return wdriver
+mail_id_list = data[0].split() #obtient les id des messages et les sépare
 
-url = "https://mail.google.com/mail/u/0/#sent"
-response = requests.get(connection)
-soup = BeautifulSoup(response.text,"html.parser")
+messages = [] #creer liste pour mettre les infos
+for num in mail_id_list:
+    résultat, data = mail.fetch(num, "(RFC822)")
+    messages.append(data)
 
-Gibaud = soup.findAll("td")
-for i in Gibaud:
-    print(i["class"])
+for info in messages:
+    for response_part in info:
+        if type(response_part) is tuple:
+            mess = email.message_from_bytes(response_part[1])
+            print("subj:", mess["subject"]) #print l'objet
+            print("from:", mess["from"]) #print par qui
+            body = email.message_from_string(mess.as_string())
+            for payload in body.get_payload():
+                if payload.get_content_type() == 'text/plain': #affichera juste le message
+                    print(payload.get_payload())
+            for i in mess['from']:
+                mail = mess['from']
+                text = mail.split() #décompose le texte par mot, dans une liste
+            print(text[2])
+
